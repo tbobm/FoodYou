@@ -29,3 +29,8 @@ captures
 !*.xcodeproj/project.xcworkspace/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
+
+# Personal data / local tooling — never commit real health data or session artifacts
+/File-Export-*/
+.claude/
+valkey-mcp-server.log
