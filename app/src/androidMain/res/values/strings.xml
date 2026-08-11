@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name" translatable="false">mymymeal</string>
+    <string name="widget_diary_description">Today\'s calories &amp; macros</string>
 </resources>
