@@ -21,4 +21,9 @@ data class DiaryProductEntity(
     val sourceType: FoodSourceType,
     val sourceUrl: String?,
     val note: String?,
+
+    // Cost snapshot (PRD 1.3), mirroring the nutrition-snapshot pattern: per-unit, immutable once
+    // written, exactly like `nutrients` above.
+    val unitCost: Double? = null,
+    val currency: String? = null,
 )

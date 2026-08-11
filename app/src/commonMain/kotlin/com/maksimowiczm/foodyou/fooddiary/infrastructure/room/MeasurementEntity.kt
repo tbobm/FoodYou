@@ -34,4 +34,15 @@ data class MeasurementEntity(
     val createdAt: Long,
     /** Epoch seconds */
     val updatedAt: Long,
+
+    // Provenance (PRD 1.2). Null for every row logged before this column existed -- there is no
+    // historical record of which UI action was used, except sourceKind = "recipe" for rows with
+    // a non-null recipeId, which is backfilled on migration.
+    val sourceKind: String? = null,
+    val confidence: String? = null,
+
+    // Soft reference to the catalog food this entry originated from, for convenience only.
+    // Deliberately not a foreign key: nothing on a read path may depend on it resolving.
+    val originProductId: Long? = null,
+    val originRecipeId: Long? = null,
 )

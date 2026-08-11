@@ -1,6 +1,13 @@
 # Phase 1.2 + 1.3 proposal: provenance and cost columns
 
-Per PRD §2 gate rules: this is a proposal only. Nothing in this document has been implemented.
+**Approved 2026-08-11.** The owner confirmed all three open questions below as recommended:
+`unitCost`/`currency` mirror the existing per-unit nutrition-snapshot pattern (not literal resolved
+totals); legacy `Measurement`/`ManualDiaryEntry` provenance stays `NULL` where genuinely unknown;
+recipe-backed legacy `Measurement` rows are backfilled `sourceKind = 'recipe'` since that is
+knowable, not guessed. Implementation: migration v32→33, see the commit that touches
+`FoodYouDatabase.kt`. Scope is the migration itself only — PRD 1.2's "subtle visual marker" UI and
+capturing `sourceKind` on new writes going forward remain follow-up work, as flagged below.
+
 Combined into one migration per the recommendation in `docs/phase-1.1-proposal.md` (1.2's
 `confidence` column already covers 1.1's "flag backfilled entries" need, so there's no reason to
 split them).

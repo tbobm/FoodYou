@@ -23,4 +23,8 @@ data class ProductEntity(
     val sourceType: FoodSourceType,
     val sourceUrl: String? = null,
     val isLiquid: Boolean,
+
+    // PRD 1.3. No cost reporting built on these yet -- deferred to Phase 4.
+    val pricePerUnit: Double? = null,
+    val currency: String? = null,
 )

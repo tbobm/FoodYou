@@ -1,9 +1,9 @@
-# Database schema (as of this fork, schema version 32)
+# Database schema (as of this fork, schema version 33)
 
 Single Room database: `FoodYouDatabase`
 (`app/src/commonMain/kotlin/com/maksimowiczm/foodyou/app/infrastructure/room/FoodYouDatabase.kt`).
 `exportSchema = true`; every version's JSON schema is checked in under
-`app/schemas/com.maksimowiczm.foodyou.app.infrastructure.room.FoodYouDatabase/{1..32}.json`.
+`app/schemas/com.maksimowiczm.foodyou.app.infrastructure.room.FoodYouDatabase/{1..33}.json`.
 
 ## The load-bearing finding: entries already snapshot at write time
 
@@ -42,7 +42,7 @@ All entities live under `app/src/commonMain/kotlin/com/maksimowiczm/foodyou/`, i
 
 | Entity | Table | Key columns | Notes |
 |---|---|---|---|
-| `ProductEntity` | `Product` | `id` PK, `name`, `brand?`, `barcode?`, embedded `Nutrients`/`Vitamins`/`Minerals`, `packageWeight?`, `servingWeight?`, `note?`, `sourceType`, `sourceUrl?`, `isLiquid` | The searchable catalog of foods (user-created + OFF/USDA/Swiss mirror). `sourceType` enum: `User`, `OpenFoodFacts`, `USDA`, `SwissFoodCompositionDatabase` — this is provenance of the *catalog record*, not of a *diary entry* (PRD's `source_kind` is a different, currently-absent concept — see gaps.md). |
+| `ProductEntity` | `Product` | `id` PK, `name`, `brand?`, `barcode?`, embedded `Nutrients`/`Vitamins`/`Minerals`, `packageWeight?`, `servingWeight?`, `note?`, `sourceType`, `sourceUrl?`, `isLiquid`, `pricePerUnit?` (v33), `currency?` (v33) | The searchable catalog of foods (user-created + OFF/USDA/Swiss mirror). `sourceType` enum: `User`, `OpenFoodFacts`, `USDA`, `SwissFoodCompositionDatabase` — this is provenance of the *catalog record*, not of a *diary entry* (PRD's `source_kind` is a different concept, added on `Measurement`/`ManualDiaryEntry` in v33 — see below). `pricePerUnit`/`currency` are PRD 1.3's columns: nullable, no UI, no reads yet (deferred to Phase 4). |
 | `RecipeEntity` | `Recipe` | `id` PK, `name`, `servings`, `note?`, `isLiquid` | Template only, no nutrition columns of its own (computed from ingredients). |
 | `RecipeIngredientEntity` | `RecipeIngredient` | `id` PK, `recipeId` FK→Recipe (cascade), `ingredientProductId?` FK→Product, `ingredientRecipeId?` FK→Recipe (nested recipes allowed), `measurement`, `quantity` | Composition of a catalog recipe. |
 | `ProductFts` / `RecipeFts` | `ProductFts` / `RecipeFts` | FTS4 virtual tables over `Product`/`Recipe` (`name`, `brand?`/–, `note?`), Unicode61 tokenizer, diacritics removed | Local full-text search (added v30/v31, Cyrillic tokenizer support added v32). |
@@ -55,16 +55,16 @@ All entities live under `app/src/commonMain/kotlin/com/maksimowiczm/foodyou/`, i
 | Entity | Table | Key columns | Notes |
 |---|---|---|---|
 | `MealEntity` | `Meal` | `id` PK, `name`, `fromHour/Minute`, `toHour/Minute`, `rank` | User-definable meal slots (breakfast/lunch/dinner/snack + custom) — satisfies PRD's meal-slot requirement already. |
-| `MeasurementEntity` | `Measurement` | `id` PK, `mealId` FK→Meal (cascade), `epochDay`, `productId?`/`recipeId?` FK→**DiaryProduct/DiaryRecipe** (not the catalog), `measurement` (unit enum), `quantity`, `createdAt`/`updatedAt` (epoch seconds) | **This is the diary log entry for barcode/search/recipe-sourced foods.** Local date is `epochDay` (day-granularity, timezone-stable as PRD requires); no separate instant+local-date pair, but `epochDay` alone already avoids the "timezone changes move entries between days" failure mode since it's not derived from a stored instant at read time. |
-| `DiaryProductEntity` | `DiaryProduct` | `id` PK (own space, no FK to catalog), `name`, embedded `Nutrients`/`Vitamins`/`Minerals`, `packageWeight?`, `servingWeight?`, `isLiquid`, `sourceType`, `sourceUrl?`, `note?` | The snapshot copy described above. One row per logged product instance (not deduplicated/shared across entries). |
-| `DiaryRecipeEntity` / `DiaryRecipeIngredientEntity` | `DiaryRecipe` / `DiaryRecipeIngredient` | mirrors `Recipe`/`RecipeIngredient` shape, own PK space | Snapshot copy of a recipe's composition at the moment it was logged — ingredients reference `DiaryProduct`/`DiaryRecipe` recursively, so a later edit to the source recipe cannot alter a past entry. |
-| `ManualDiaryEntryEntity` | `ManualDiaryEntry` | `id` PK, `mealId` FK→Meal (cascade), `dateEpochDay`, `name`, embedded `Nutrients`/`Vitamins`/`Minerals`, `createdEpochSeconds`/`updatedEpochSeconds` | **The manual-estimate path** — no product/recipe reference at all, nutrition entered directly. This is the closest existing match to PRD's `source_kind = manual_estimate`. |
+| `MeasurementEntity` | `Measurement` | `id` PK, `mealId` FK→Meal (cascade), `epochDay`, `productId?`/`recipeId?` FK→**DiaryProduct/DiaryRecipe** (not the catalog), `measurement` (unit enum), `quantity`, `createdAt`/`updatedAt` (epoch seconds), `sourceKind?` (v33), `confidence?` (v33), `originProductId?` (v33), `originRecipeId?` (v33) | **This is the diary log entry for barcode/search/recipe-sourced foods.** Local date is `epochDay` (day-granularity, timezone-stable as PRD requires); no separate instant+local-date pair, but `epochDay` alone already avoids the "timezone changes move entries between days" failure mode since it's not derived from a stored instant at read time. `sourceKind`/`confidence`/`origin*` (PRD 1.2) are all nullable and `NULL` for every row logged before v33, except `sourceKind = 'recipe'` backfilled for rows with a non-null `recipeId` (deterministically knowable). `originProductId`/`originRecipeId` are soft references to the *catalog* `Product`/`Recipe` (no FK constraint, by design — PRD: "nothing on a read path may depend on it resolving"); nothing populates them yet on new writes. |
+| `DiaryProductEntity` | `DiaryProduct` | `id` PK (own space, no FK to catalog), `name`, embedded `Nutrients`/`Vitamins`/`Minerals`, `packageWeight?`, `servingWeight?`, `isLiquid`, `sourceType`, `sourceUrl?`, `note?`, `unitCost?` (v33), `currency?` (v33) | The snapshot copy described above. One row per logged product instance (not deduplicated/shared across entries). `unitCost`/`currency` (PRD 1.3) mirror the existing per-unit nutrition-snapshot pattern rather than storing a pre-resolved total — see `docs/phase-1.2-1.3-proposal.md`. |
+| `DiaryRecipeEntity` / `DiaryRecipeIngredientEntity` | `DiaryRecipe` / `DiaryRecipeIngredient` | mirrors `Recipe`/`RecipeIngredient` shape, own PK space; `DiaryRecipe` adds `unitCost?`/`currency?` (v33) | Snapshot copy of a recipe's composition at the moment it was logged — ingredients reference `DiaryProduct`/`DiaryRecipe` recursively, so a later edit to the source recipe cannot alter a past entry. |
+| `ManualDiaryEntryEntity` | `ManualDiaryEntry` | `id` PK, `mealId` FK→Meal (cascade), `dateEpochDay`, `name`, embedded `Nutrients`/`Vitamins`/`Minerals`, `createdEpochSeconds`/`updatedEpochSeconds`, `sourceKind` NOT NULL = `'manual_estimate'` (v33), `confidence` NOT NULL = `'estimated'` (v33), `unitCost?` (v33), `currency?` (v33) | **The manual-estimate path** — no product/recipe reference at all, nutrition entered directly. `sourceKind`/`confidence` are non-null and deterministic here (every row in this table *is* a manual estimate), backfilled on migration for all pre-existing rows too. |
 
 Note the diary has **two parallel entry tables** (`Measurement` for product/recipe-backed entries,
 `ManualDiaryEntry` for manual ones) — confirmed by `HomeScreen`'s
 `onEditDiaryEntryClick(foodEntryId: Long?, manualEntryId: Long?)` taking two separate nullable IDs.
-Any Phase 1 work introducing a unified `source_kind`/`confidence` column must account for both
-tables, or unify them — that unification would be a real schema change requiring the PRD §2 gate.
+As of v33, `source_kind`/`confidence` were added to **both** tables separately rather than unified
+into one — the PRD §2 gate this required was resolved in `docs/phase-1.2-1.3-proposal.md`.
 
 ### Other
 
@@ -76,21 +76,33 @@ tables, or unify them — that unification would be a real schema change requiri
 
 ## What's absent (relative to PRD §4 "Log entry" requirements)
 
-None of the following exist on `MeasurementEntity` or `ManualDiaryEntryEntity` today:
+As of v33, the columns below all **exist** (PRD 1.2 + 1.3, migration `addProvenanceAndCostColumns`,
+`docs/phase-1.2-1.3-proposal.md`). What's still absent is the *application code* around them —
+this was deliberately out of scope for the schema-only migration:
 
-- `source_kind` (`barcode` / `database_search` / `custom_food` / `recipe` / `manual_estimate`) — closest proxies are `DiaryProductEntity.sourceType` (catalog provenance: User/OpenFoodFacts/USDA/Swiss) and the Measurement-vs-ManualDiaryEntry table split, but neither distinguishes "scanned a barcode" from "searched the database" from "used a custom food."
-- `confidence` (`measured` / `estimated`)
-- `origin_ref` — nullable soft reference back to the *catalog* food/recipe a diary entry came from, for convenience. Currently there is no link at all from a `DiaryProductEntity`/`DiaryRecipeEntity` back to the `ProductEntity`/`RecipeEntity` it was copied from — once logged, the connection to "which catalog item was this" is lost.
-- `unit_cost` / `currency` on entries, and `price_per_unit` / `currency` on `ProductEntity` (PRD 1.3, Phase 4).
-- A "backfilled" flag distinguishing reconstructed entries from originally-captured ones (relevant if `unlinkDiaryMigration`'s historical backfill needs to be marked in retrospect, or for any future backfill).
+- **No UI surfaces `confidence` yet.** PRD 1.2 also asks for "a subtle visual marker" on
+  `estimated` entries in the diary — not built. `confidence` is currently `NULL` (unknown) for
+  every pre-v33 `Measurement` row and `'estimated'` for every `ManualDiaryEntry` row; nothing
+  distinguishes them visually.
+- **Nothing populates `sourceKind`/`confidence`/`originProductId`/`originRecipeId` on *new* writes
+  going forward.** The UI entry points (barcode scan, database search, custom food, recipe log)
+  don't yet plumb which path was used through to `RoomFoodDiaryEntryRepository.insert()`. Every
+  row logged today, even after v33, gets `NULL` provenance unless this is wired up.
+- **No cost reporting or price-entry UI** reads `pricePerUnit`/`unitCost`/`currency` — deferred to
+  Phase 4 per PRD, and the columns' semantics (price per gram vs. price per logged unit) are an
+  open question left for whichever phase builds that UI (see the proposal doc).
+- A "backfilled" flag distinguishing reconstructed entries from originally-captured ones was
+  considered and explicitly **not** added (`docs/phase-1.1-proposal.md`) — there is no data left to
+  distinguish `unlinkDiaryMigration`'s historical backfill from normal rows, so a flag column would
+  be cosmetic. `confidence` was judged to already cover the *future* version of this need.
 
-## Migration chain (version 1 → 32)
+## Migration chain (version 1 → 33)
 
 Defined across `FoodYouDatabase.kt` (autoMigrations list + `migrations` companion list) and
 `app/src/commonMain/kotlin/com/maksimowiczm/foodyou/app/infrastructure/room/migration/`
 (`LegacyMigrations.kt`, `FoodYou3Migration.kt`, `UnlinkDiaryMigration.kt` (expect) +
 `UnlinkDiaryMigration.android.kt` (actual), `DeleteUsedFoodEvent.kt`, `FixMeasurementSuggestions.kt`,
-`FoodSearchFtsMigration.kt`, `FoodSearchFtsCyrillicMigration.kt`).
+`FoodSearchFtsMigration.kt`, `FoodSearchFtsCyrillicMigration.kt`, `AddProvenanceAndCostColumns.kt`).
 
 | From→To | Kind | What changed |
 |---|---|---|
@@ -113,10 +125,11 @@ Defined across `FoodYouDatabase.kt` (autoMigrations list + `migrations` companio
 | 29→30 | Auto | Add `MeasurementSuggestion` indices. |
 | 30→31 | Manual (`FoodSearchFtsMigration`) | Add FTS4 tables for `Product`/`Recipe` search. |
 | 31→32 | Manual (`FoodSearchFtsCyrillicMigration`) | Add Cyrillic tokenizer support to the FTS tables. |
+| **32→33** | Manual (`addProvenanceAndCostColumns`) | **PRD 1.2 + 1.3.** Adds `sourceKind`/`confidence`/`originProductId`/`originRecipeId` to `Measurement` (all nullable, `sourceKind = 'recipe'` backfilled where `recipeId IS NOT NULL`); `sourceKind`/`confidence` (NOT NULL, defaulted) + `unitCost`/`currency` to `ManualDiaryEntry`; `pricePerUnit`/`currency` to `Product`; `unitCost`/`currency` to `DiaryProduct` and `DiaryRecipe`. Purely additive, no destructive change. |
 
 **Migration fixture tests already exist** for the manual migrations, satisfying PRD §4's migration
 policy pattern (extend, don't parallel):
-`app/src/commonTest/.../migration/Abstract{FoodYou3,UnlinkDiary,DeleteUsedFoodEvent,FoodSearchFts}MigrationTest.kt`
+`app/src/commonTest/.../migration/Abstract{FoodYou3,UnlinkDiary,DeleteUsedFoodEvent,FoodSearchFts,AddProvenanceAndCostColumns}Test.kt`
 with Android instrumented implementations under `app/src/androidInstrumentedTest/.../migration/`.
 Any new migration this project adds should follow the same `Abstract*Test` + platform-`actual`-test
 pattern rather than introducing a new harness.
