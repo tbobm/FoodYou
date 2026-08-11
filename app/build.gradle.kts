@@ -138,6 +138,12 @@ android {
     }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
     buildTypes {
+        getByName("debug") {
+            // Distinct from the upstream applicationId so this fork's debug build can be
+            // sideloaded on a device that already has the real Food You installed.
+            applicationIdSuffix = ".dev"
+            resValue("string", "app_name", "Food You Dev")
+        }
         getByName("release") {
             isMinifyEnabled = true
             proguardFiles(
