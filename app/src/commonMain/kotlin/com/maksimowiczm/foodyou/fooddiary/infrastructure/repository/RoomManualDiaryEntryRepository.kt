@@ -27,6 +27,9 @@ internal class RoomManualDiaryEntryRepository(private val dao: ManualDiaryEntryD
             list.map(ManualDiaryEntryEntity::toModel)
         }
 
+    override fun observeAll(): Flow<List<ManualDiaryEntry>> =
+        dao.observeAllEntries().map { list -> list.map(ManualDiaryEntryEntity::toModel) }
+
     override suspend fun insert(
         name: String,
         mealId: Long,

@@ -52,14 +52,17 @@ abstract class MeasurementDao {
 
     @Query(
         """
-        SELECT * 
+        SELECT *
         FROM Measurement
-        WHERE 
-            mealId = :mealId 
-            AND epochDay = :epochDay 
+        WHERE
+            mealId = :mealId
+            AND epochDay = :epochDay
         """
     )
     abstract fun observeMeasurements(mealId: Long, epochDay: Long): Flow<List<MeasurementEntity>>
+
+    @Query("SELECT * FROM Measurement")
+    abstract fun observeAllMeasurements(): Flow<List<MeasurementEntity>>
 
     @Query(
         """

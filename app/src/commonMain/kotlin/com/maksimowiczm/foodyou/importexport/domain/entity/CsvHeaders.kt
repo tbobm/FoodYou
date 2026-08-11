@@ -58,3 +58,40 @@ fun ProductField.csvHeader(): String =
         ProductField.Iodine -> "Iodine (g)"
         ProductField.Chromium -> "Chromium (g)"
     }
+
+/** CSV header mapping for [DiaryEntryField]. */
+fun DiaryEntryField.csvHeader(): String =
+    when (this) {
+        DiaryEntryField.Id -> "Id"
+        DiaryEntryField.EntryType -> "Entry Type"
+        DiaryEntryField.MealId -> "Meal Id"
+        DiaryEntryField.MealName -> "Meal Name"
+        DiaryEntryField.Date -> "Date"
+        DiaryEntryField.Name -> "Name"
+        DiaryEntryField.MeasurementType -> "Measurement Type"
+        DiaryEntryField.MeasurementValue -> "Measurement Value"
+        DiaryEntryField.WeightGrams -> "Weight (g)"
+        DiaryEntryField.CreatedAt -> "Created At"
+        DiaryEntryField.UpdatedAt -> "Updated At"
+    }
+
+/** CSV header mapping for [RecipeField]. */
+fun RecipeField.csvHeader(): String =
+    when (this) {
+        RecipeField.Id -> "Id"
+        RecipeField.Name -> "Name"
+        RecipeField.Servings -> "Servings"
+        RecipeField.Note -> "Note"
+        RecipeField.IsLiquid -> "Is Liquid"
+    }
+
+/** CSV header mapping for [RecipeIngredientField]. */
+fun RecipeIngredientField.csvHeader(): String =
+    when (this) {
+        RecipeIngredientField.RecipeId -> "Recipe Id"
+        RecipeIngredientField.RecipeName -> "Recipe Name"
+        RecipeIngredientField.IngredientType -> "Ingredient Type"
+        RecipeIngredientField.IngredientName -> "Ingredient Name"
+        RecipeIngredientField.MeasurementType -> "Measurement Type"
+        RecipeIngredientField.MeasurementValue -> "Measurement Value"
+    }
