@@ -32,7 +32,7 @@ Stop and wait for approval before:
 - Changing the package name or application ID
 - Adding a new third-party dependency
 - Deleting or rewriting any upstream module rather than extending it
-- Any work that touches the MyFitnessPal import once real data has been imported
+- Any work that touches the MyFitnessPal import once real data has been imported (moot — Phase 2 was skipped, see §5)
 
 At each gate, output: the proposed change, the migration SQL if applicable, the rollback path, and what existing data could be affected.
 
@@ -124,7 +124,23 @@ Each diary entry must persist, at write time:
 
 Acceptance: schema documented, migration tests pass, export round-trips into a fresh install without loss.
 
-### Phase 2: migration off MyFitnessPal
+### Phase 2: migration off MyFitnessPal — SKIPPED, 2026-08-11
+
+**Skipped by owner decision.** Historical MFP data has little value here; the owner will simply
+start logging in this app going forward rather than importing years of past data. `docs/phase-2.1-proposal.md`
+(written proposal for the importer, never approved) is left in the repo as a record of the design
+work already done, in case this is revisited later, but nothing in it should be built without a
+fresh decision to do so.
+
+This also means:
+
+- The gate in §2 about "any work that touches the MyFitnessPal import once real data has been
+  imported" no longer applies — no MFP import will happen.
+- §8's definition of done is adjusted accordingly (see below): cancelling MyFitnessPal no longer
+  depends on an import/review step.
+- §5.3's first-run flow drops "optional MFP import" from its scope.
+
+The original importer spec (kept for reference, not being built):
 
 **2.1 Importer** for the MyFitnessPal Premium data export (three CSVs in a zip: nutrition detail with per-meal macros and timestamps, progress history, exercise history).
 
@@ -176,7 +192,7 @@ Acceptance: each feature has at least one test; the tap audit shows two taps or 
 
 **5.1** Licence obligations satisfied: public source repository if required, notices preserved, distinct application ID and name so the fork cannot be confused with upstream.
 **5.2** Google limited distribution account registered. Free, no government ID, up to 20 devices. Do not build a habit around unregistered APK sideloading, since developer verification is being enforced progressively from late 2026 and globally in 2027.
-**5.3** First-run flow: seed the Open Food Facts subset, choose targets, optional MFP import.
+**5.3** First-run flow: seed the Open Food Facts subset, choose targets. (No MFP import step — Phase 2 was skipped, see above.)
 **5.4** Local crash log capture with explicit user-initiated sharing. No automatic upload.
 **5.5** `MAINTENANCE.md`: how to cut a release, how to test a migration against a real database, what to do when a friend reports data loss.
 
@@ -191,7 +207,7 @@ Do not depend on the live search API for the primary path.
 
 ## 7. Non-goals
 
-- Exercise tracking, beyond importing the MFP history for completeness
+- Exercise tracking (Phase 2's MFP exercise-history import was already out of scope even before Phase 2 was skipped entirely)
 - Social features, sharing, streaks, gamification
 - Cloud sync between devices
 - iOS
@@ -202,7 +218,7 @@ Do not depend on the live search API for the primary path.
 ## 8. Definition of done, whole project
 
 - The owner has logged every meal in this app and not in MyFitnessPal for 30 consecutive days
-- The MyFitnessPal subscription is cancelled and its export is imported and reviewed
+- The MyFitnessPal subscription is cancelled (no import/review step — Phase 2 was skipped, 2026-08-11: historical data has little value, the owner is starting fresh going forward)
 - A full export and reimport into a clean install loses nothing
 - Every migration has a fixture test
 - `CLAUDE.md`, `docs/schema.md`, and `MAINTENANCE.md` are current
