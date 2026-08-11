@@ -125,7 +125,7 @@ android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.maksimowiczm.foodyou"
+        applicationId = "mymymeal.tbobm.dev"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = libs.versions.android.versionCode.get().toInt()
@@ -138,12 +138,6 @@ android {
     }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
     buildTypes {
-        getByName("debug") {
-            // Distinct from the upstream applicationId so this fork's debug build can be
-            // sideloaded on a device that already has the real Food You installed.
-            applicationIdSuffix = ".dev"
-            resValue("string", "app_name", "Food You Dev")
-        }
         getByName("release") {
             isMinifyEnabled = true
             proguardFiles(
