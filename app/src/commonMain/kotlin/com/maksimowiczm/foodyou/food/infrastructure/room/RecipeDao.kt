@@ -14,6 +14,9 @@ abstract class RecipeDao {
     @Query("SELECT * FROM Recipe WHERE id = :recipeId")
     abstract fun observeRecipe(recipeId: Long): Flow<RecipeEntity?>
 
+    @Query("SELECT * FROM Recipe")
+    abstract fun observeAllRecipes(): Flow<List<RecipeEntity>>
+
     @Query("SELECT * FROM RecipeIngredient WHERE recipeId = :recipeId")
     abstract fun observeRecipeIngredients(recipeId: Long): Flow<List<RecipeIngredientEntity>>
 

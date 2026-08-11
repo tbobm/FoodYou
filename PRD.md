@@ -100,7 +100,10 @@ Each diary entry must persist, at write time:
 
 ### Weight log
 
-- Date, value, unit. Required by Phase 3.
+- **Deferred, 2026-08-11.** The owner will not log weight manually in this app. Weight data, if
+  used at all, will come from Google Health Connect in a future phase. No `WeightLog` entity
+  exists and none is proposed by Phase 1.4. Phase 3.2 and 3.6 (weight trend) depend on a weight
+  data source that is not yet decided; revisit before starting either.
 
 ### Migration policy
 
@@ -117,7 +120,7 @@ Each diary entry must persist, at write time:
 
 **1.3 Cost columns.** Add the nullable columns to food records and entries. No UI.
 
-**1.4 Export.** A single action producing a zip containing: full entry history as CSV, foods, recipes, and weight log. This must exist before any import work, so that a bad import is recoverable.
+**1.4 Export.** A single action producing a zip containing: full entry history as CSV, foods, and recipes. This must exist before any import work, so that a bad import is recoverable. Weight log is omitted per the deferral in §4 — there is no weight data to export.
 
 Acceptance: schema documented, migration tests pass, export round-trips into a fresh install without loss.
 

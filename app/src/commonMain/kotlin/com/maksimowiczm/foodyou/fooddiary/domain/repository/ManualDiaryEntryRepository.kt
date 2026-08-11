@@ -12,6 +12,9 @@ interface ManualDiaryEntryRepository {
 
     fun observeAll(mealId: Long, date: LocalDate): Flow<List<ManualDiaryEntry>>
 
+    /** Bulk read of every entry, regardless of meal or date. For full-data export. */
+    fun observeAll(): Flow<List<ManualDiaryEntry>>
+
     suspend fun insert(
         name: String,
         mealId: Long,

@@ -14,12 +14,15 @@ interface ManualDiaryEntryDao {
 
     @Query(
         """
-            SELECT * 
-            FROM ManualDiaryEntry 
+            SELECT *
+            FROM ManualDiaryEntry
             WHERE mealId = :mealId AND dateEpochDay = :dateEpochDay
         """
     )
     fun observeAll(mealId: Long, dateEpochDay: Long): Flow<List<ManualDiaryEntryEntity>>
+
+    @Query("SELECT * FROM ManualDiaryEntry")
+    fun observeAllEntries(): Flow<List<ManualDiaryEntryEntity>>
 
     @Insert suspend fun insert(entry: ManualDiaryEntryEntity): Long
 

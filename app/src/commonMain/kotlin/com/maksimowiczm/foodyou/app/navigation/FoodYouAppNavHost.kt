@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.maksimowiczm.foodyou.app.ui.about.AboutScreen
 import com.maksimowiczm.foodyou.app.ui.database.exportcsvproducts.ExportCsvProductsScreen
+import com.maksimowiczm.foodyou.app.ui.database.exportfulldata.ExportFullDataScreen
 import com.maksimowiczm.foodyou.app.ui.database.externaldatabases.ExternalDatabasesScreen
 import com.maksimowiczm.foodyou.app.ui.database.externaldatabases.OpenFoodFactsLoginDialog
 import com.maksimowiczm.foodyou.app.ui.database.externaldatabases.UpdateUsdaApiKeyDialog
@@ -126,6 +127,7 @@ fun FoodYouAppNavHost(onDatabaseBackup: () -> Unit, modifier: Modifier = Modifie
                 onExternalDatabases = { navController.navigateSingleTop(ExternalDatabases) },
                 onImportCsvProducts = { navController.navigateSingleTop(ImportCsvProducts) },
                 onExportCsvProducts = { navController.navigateSingleTop(ExportCsvProducts) },
+                onExportFullData = { navController.navigateSingleTop(ExportFullData) },
                 onDatabaseBackup = onDatabaseBackup,
             )
         }
@@ -152,6 +154,12 @@ fun FoodYouAppNavHost(onDatabaseBackup: () -> Unit, modifier: Modifier = Modifie
             ExportCsvProductsScreen(
                 onBack = { navController.popBackStackInclusive<ExportCsvProducts>() },
                 onFinish = { navController.popBackStackInclusive<ExportCsvProducts>() },
+            )
+        }
+        forwardBackwardComposable<ExportFullData> {
+            ExportFullDataScreen(
+                onBack = { navController.popBackStackInclusive<ExportFullData>() },
+                onFinish = { navController.popBackStackInclusive<ExportFullData>() },
             )
         }
         dialog<UsdaApiKey> {
@@ -413,6 +421,8 @@ fun FoodYouAppNavHost(onDatabaseBackup: () -> Unit, modifier: Modifier = Modifie
 @Serializable private object ImportCsvProducts
 
 @Serializable private object ExportCsvProducts
+
+@Serializable private object ExportFullData
 
 @Serializable private data class FoodDiaryCreateQuickAdd(val epochDay: Long, val mealId: Long)
 

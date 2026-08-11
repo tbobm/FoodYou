@@ -71,6 +71,17 @@ internal class RoomRecipeRepository(
                 }
             }
 
+    override fun observeAllRecipes(): Flow<List<Recipe>> =
+        recipeDao.observeAllRecipes().flatMapLatest { entities ->
+            if (entities.isEmpty()) {
+                flowOf(emptyList())
+            } else {
+                combine(entities.map { observeRecipe(FoodId.Recipe(it.id)).filterNotNull() }) {
+                    it.toList()
+                }
+            }
+        }
+
     override suspend fun deleteRecipe(recipe: Recipe) {
         val entity = recipe.toEntity()
         recipeDao.delete(entity)

@@ -98,6 +98,37 @@ internal class RoomFoodDiaryEntryRepository(
             }
     }
 
+    override fun observeAll(): Flow<List<FoodDiaryEntry>> =
+        dao.observeAllMeasurements().flatMapLatest { entities ->
+            if (entities.isEmpty()) {
+                return@flatMapLatest flowOf(emptyList())
+            }
+
+            entities
+                .map { entity ->
+                    val foodFlow = observeFood(entity)
+                    val createdAt =
+                        Instant.fromEpochSeconds(entity.createdAt)
+                            .toLocalDateTime(TimeZone.currentSystemDefault())
+                    val updatedAt =
+                        Instant.fromEpochSeconds(entity.updatedAt)
+                            .toLocalDateTime(TimeZone.currentSystemDefault())
+
+                    foodFlow.map {
+                        FoodDiaryEntry(
+                            id = entity.id.toFoodDiaryEntryId(),
+                            mealId = entity.mealId,
+                            date = LocalDate.fromEpochDays(entity.epochDay),
+                            measurement = Measurement.from(entity.measurement, entity.quantity),
+                            food = it,
+                            createdAt = createdAt,
+                            updatedAt = updatedAt,
+                        )
+                    }
+                }
+                .combine()
+        }
+
     override suspend fun insert(
         measurement: Measurement,
         mealId: Long,

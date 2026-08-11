@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.CloudDownload
 import androidx.compose.material.icons.outlined.FileOpen
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.Scaffold
@@ -26,6 +27,7 @@ fun DatabaseSettingsScreen(
     onExternalDatabases: () -> Unit,
     onImportCsvProducts: () -> Unit,
     onExportCsvProducts: () -> Unit,
+    onExportFullData: () -> Unit,
     onDatabaseBackup: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -48,6 +50,7 @@ fun DatabaseSettingsScreen(
             item { ExternalDatabasesSettingsListItem(onExternalDatabases) }
             item { ImportCsvProductsSettingsListItem(onImportCsvProducts) }
             item { ExportCsvProductsSettingsListItem(onExportCsvProducts) }
+            item { ExportFullDataSettingsListItem(onExportFullData) }
             item { DatabaseBackup(onDatabaseBackup) }
         }
     }
@@ -85,6 +88,17 @@ private fun ExportCsvProductsSettingsListItem(onClick: () -> Unit, modifier: Mod
         supportingContent = {
             Text(stringResource(Res.string.description_export_csv_food_products))
         },
+        onClick = onClick,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun ExportFullDataSettingsListItem(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    SettingsListItem(
+        icon = { Icon(Icons.Outlined.Save, null) },
+        label = { Text(stringResource(Res.string.action_export_full_data)) },
+        supportingContent = { Text(stringResource(Res.string.description_export_full_data)) },
         onClick = onClick,
         modifier = modifier,
     )

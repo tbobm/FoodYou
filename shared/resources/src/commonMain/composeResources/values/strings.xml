@@ -391,6 +391,12 @@
     <string name="action_export_csv_food_products">Export CSV food products</string>
     <string name="description_export_csv_food_products">Export food products to CSV file</string>
 
+    <string name="action_export_full_data">Export full backup</string>
+    <string name="description_export_full_data">Export all diary entries, foods, and recipes as a zip of CSV files</string>
+    <string name="notification_exporting_full_data">Exporting full backup</string>
+    <string name="description_please_wait_while_exporting_full_data">Please wait while exporting your full backup</string>
+    <string name="headline_export_complete">Export complete</string>
+
     <string name="neutral_no_column">No column</string>
 
     <plurals name="neutral_imported_x_food_products">

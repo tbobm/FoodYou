@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.Flow
 interface RecipeRepository {
     fun observeRecipe(recipeId: FoodId.Recipe): Flow<Recipe?>
 
+    /** Bulk read of every recipe. For full-data export. */
+    fun observeAllRecipes(): Flow<List<Recipe>>
+
     suspend fun insertRecipe(
         name: String,
         servings: Int,
