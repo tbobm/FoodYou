@@ -107,6 +107,8 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.sqlite.android)
+            implementation(libs.androidx.glance.appwidget)
+            implementation(libs.androidx.glance.material3)
         }
 
         androidInstrumentedTest.dependencies {
