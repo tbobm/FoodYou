@@ -23,14 +23,15 @@ import com.maksimowiczm.foodyou.app.ui.home.calendar.CalendarCard
 import com.maksimowiczm.foodyou.app.ui.home.goals.GoalsCard
 import com.maksimowiczm.foodyou.app.ui.home.meals.card.MealsCards
 import com.maksimowiczm.foodyou.app.ui.home.poll.PollsCard
-import com.maksimowiczm.foodyou.app.ui.home.shared.rememberHomeState
+import com.maksimowiczm.foodyou.app.ui.home.shared.HomeState
 import com.maksimowiczm.foodyou.settings.domain.entity.HomeCard
 import foodyou.app.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun HomeScreen(
+internal fun HomeScreen(
+    homeState: HomeState,
     onSettings: () -> Unit,
     onTitle: () -> Unit,
     onMealCardLongClick: (mealId: Long) -> Unit,
@@ -39,11 +40,11 @@ fun HomeScreen(
     onGoalsCardLongClick: () -> Unit,
     onGoalsCardClick: (epochDay: Long) -> Unit,
     onEditDiaryEntryClick: (foodEntryId: Long?, manualEntryId: Long?) -> Unit,
+    onOpenCalendarMonth: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: HomeViewModel = koinViewModel()
     val order by viewModel.homeOrder.collectAsStateWithLifecycle()
-    val homeState = rememberHomeState()
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
@@ -86,6 +87,7 @@ fun HomeScreen(
                     HomeCard.Calendar ->
                         CalendarCard(
                             homeState = homeState,
+                            onOpenCalendarMonth = onOpenCalendarMonth,
                             modifier = Modifier.padding(horizontal = 8.dp).padding(bottom = 8.dp),
                         )
 
