@@ -6,6 +6,7 @@ import com.maksimowiczm.foodyou.common.domain.food.NutritionFactsField
 import com.maksimowiczm.foodyou.common.domain.food.sum
 import com.maksimowiczm.foodyou.common.domain.userpreferences.UserPreferencesRepository
 import com.maksimowiczm.foodyou.fooddiary.domain.usecase.ObserveDiaryMealsUseCase
+import com.maksimowiczm.foodyou.goals.domain.entity.RollingBudgetPreferences
 import com.maksimowiczm.foodyou.goals.domain.repository.GoalsRepository
 import com.maksimowiczm.foodyou.settings.domain.entity.Settings
 import kotlin.math.roundToInt
@@ -26,6 +27,7 @@ internal class GoalsViewModel(
     private val settingsRepository: UserPreferencesRepository<Settings>,
     private val observeDiaryMealsUseCase: ObserveDiaryMealsUseCase,
     private val goalsRepository: GoalsRepository,
+    private val rollingBudgetPreferencesRepository: UserPreferencesRepository<RollingBudgetPreferences>,
 ) : ViewModel() {
 
     private val dateState = MutableStateFlow<LocalDate?>(null)
@@ -44,6 +46,27 @@ internal class GoalsViewModel(
 
     fun setExpandGoalsCard(expand: Boolean) {
         viewModelScope.launch { settingsRepository.update { copy(expandGoalCard = expand) } }
+    }
+
+    val rollingBudgetPreferences: StateFlow<RollingBudgetPreferences> =
+        rollingBudgetPreferencesRepository
+            .observe()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(2_000),
+                initialValue = RollingBudgetPreferences.default,
+            )
+
+    fun setRollingBudgetWindowLength(windowLength: Int) {
+        viewModelScope.launch {
+            rollingBudgetPreferencesRepository.update { copy(windowLength = windowLength) }
+        }
+    }
+
+    fun setRollingBudgetCarryover(carryover: Boolean) {
+        viewModelScope.launch {
+            rollingBudgetPreferencesRepository.update { copy(carryover = carryover) }
+        }
     }
 
     val model: StateFlow<DaySummaryModel?> =
