@@ -1,8 +1,10 @@
 package com.maksimowiczm.foodyou.app.ui.food.search
 
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -18,7 +20,12 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.ContainedLoadingIndicator
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
@@ -38,6 +45,7 @@ import com.maksimowiczm.foodyou.app.ui.common.component.FoodListItemSkeleton
 import com.maksimowiczm.foodyou.app.ui.common.component.FullScreenCameraBarcodeScanner
 import com.maksimowiczm.foodyou.common.compose.extension.add
 import com.maksimowiczm.foodyou.common.domain.measurement.Measurement
+import com.maksimowiczm.foodyou.common.domain.tag.Tag
 import com.maksimowiczm.foodyou.common.extension.error
 import com.maksimowiczm.foodyou.food.domain.entity.FoodId
 import com.maksimowiczm.foodyou.food.domain.entity.RemoteFoodException
@@ -62,8 +70,10 @@ fun FoodSearchApp(
 
     FoodSearchApp(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        tags = viewModel.tags.collectAsStateWithLifecycle(emptyList()).value,
         onSearch = viewModel::search,
         onSourceChange = viewModel::changeSource,
+        onToggleTagFilter = viewModel::toggleTagFilter,
         onFoodClick = onFoodClick,
         onUpdateUsdaApiKey = onUpdateUsdaApiKey,
         onUpdateOpenFoodFactsCredentials = onUpdateOpenFoodFactsCredentials,
@@ -74,8 +84,10 @@ fun FoodSearchApp(
 @Composable
 private fun FoodSearchApp(
     uiState: FoodSearchUiState,
+    tags: List<Tag>,
     onSearch: (String?) -> Unit,
     onSourceChange: (FoodFilter.Source) -> Unit,
+    onToggleTagFilter: (Long) -> Unit,
     onFoodClick: (FoodSearch, Measurement) -> Unit,
     onUpdateUsdaApiKey: () -> Unit,
     onUpdateOpenFoodFactsCredentials: () -> Unit,
@@ -166,6 +178,16 @@ private fun FoodSearchApp(
                         }
                     },
                     modifier = Modifier.height(32.dp + 8.dp + 32.dp).fillMaxWidth(),
+                )
+            }
+
+            if (tags.isNotEmpty()) {
+                Spacer(Modifier.height(8.dp))
+                TagFilterChips(
+                    tags = tags,
+                    selectedTagIds = uiState.selectedTagIds,
+                    onToggleTagFilter = onToggleTagFilter,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 )
             }
 
@@ -265,3 +287,35 @@ private fun ListStates.state(source: FoodFilter.Source) =
         FoodFilter.Source.USDA -> usda
         FoodFilter.Source.SwissFoodCompositionDatabase -> swiss
     }
+
+/** PRD 3.5 (categorisation). Multi-select tag filter chips, mirroring the `MealsFilter` pattern. */
+@Composable
+private fun TagFilterChips(
+    tags: List<Tag>,
+    selectedTagIds: Set<Long>,
+    onToggleTagFilter: (Long) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FlowRow(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        tags.forEach { tag ->
+            val selected = tag.id in selectedTagIds
+
+            key(tag.id) {
+                FilterChip(
+                    selected = selected,
+                    onClick = { onToggleTagFilter(tag.id) },
+                    label = { Text(tag.name) },
+                    leadingIcon = {
+                        if (selected) {
+                            Icon(
+                                imageVector = Icons.Outlined.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(FilterChipDefaults.IconSize),
+                            )
+                        }
+                    },
+                )
+            }
+        }
+    }
+}

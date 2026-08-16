@@ -11,6 +11,7 @@ import com.maksimowiczm.foodyou.app.infrastructure.room.migration.FoodSearchFtsC
 import com.maksimowiczm.foodyou.app.infrastructure.room.migration.FoodSearchFtsMigration
 import com.maksimowiczm.foodyou.app.infrastructure.room.migration.LegacyMigrations
 import com.maksimowiczm.foodyou.app.infrastructure.room.migration.addProvenanceAndCostColumns
+import com.maksimowiczm.foodyou.app.infrastructure.room.migration.addTagTables
 import com.maksimowiczm.foodyou.app.infrastructure.room.migration.deleteUsedFoodEvent
 import com.maksimowiczm.foodyou.app.infrastructure.room.migration.fixMeasurementSuggestions
 import com.maksimowiczm.foodyou.app.infrastructure.room.migration.foodYou3Migration
@@ -20,6 +21,11 @@ import com.maksimowiczm.foodyou.common.domain.database.TransactionScope as Domai
 import com.maksimowiczm.foodyou.common.infrastructure.room.FoodSourceTypeConverter
 import com.maksimowiczm.foodyou.common.infrastructure.room.MeasurementTypeConverter
 import com.maksimowiczm.foodyou.common.infrastructure.room.RoomTransactionScope
+import com.maksimowiczm.foodyou.common.infrastructure.room.tag.ManualDiaryEntryTagCrossRefEntity
+import com.maksimowiczm.foodyou.common.infrastructure.room.tag.ProductTagCrossRefEntity
+import com.maksimowiczm.foodyou.common.infrastructure.room.tag.RecipeTagCrossRefEntity
+import com.maksimowiczm.foodyou.common.infrastructure.room.tag.TagDatabase
+import com.maksimowiczm.foodyou.common.infrastructure.room.tag.TagEntity
 import com.maksimowiczm.foodyou.food.infrastructure.room.FoodDatabase
 import com.maksimowiczm.foodyou.food.infrastructure.room.FoodEventEntity
 import com.maksimowiczm.foodyou.food.infrastructure.room.FoodEventTypeConverter
@@ -66,6 +72,10 @@ import com.maksimowiczm.foodyou.sponsorship.infrastructure.room.SponsorshipEntit
             ManualDiaryEntryEntity::class,
             ProductFts::class,
             RecipeFts::class,
+            TagEntity::class,
+            ProductTagCrossRefEntity::class,
+            RecipeTagCrossRefEntity::class,
+            ManualDiaryEntryTagCrossRefEntity::class,
         ],
     views = [RecipeAllIngredientsView::class, LatestMeasurementSuggestion::class],
     version = FoodYouDatabase.VERSION,
@@ -129,7 +139,8 @@ abstract class FoodYouDatabase :
     FoodDatabase,
     FoodSearchDatabase,
     FoodDiaryDatabase,
-    SponsorshipDatabase {
+    SponsorshipDatabase,
+    TagDatabase {
 
     override suspend fun <T> withTransaction(block: suspend DomainTransactionScope<T>.() -> T): T =
         useWriterConnection {
@@ -140,7 +151,7 @@ abstract class FoodYouDatabase :
         }
 
     companion object {
-        const val VERSION = 33
+        const val VERSION = 34
 
         private val migrations: List<Migration> =
             listOf(
@@ -159,6 +170,7 @@ abstract class FoodYouDatabase :
                 FoodSearchFtsMigration,
                 FoodSearchFtsCyrillicMigration,
                 addProvenanceAndCostColumns,
+                addTagTables,
             )
 
         fun Builder<FoodYouDatabase>.buildDatabase(

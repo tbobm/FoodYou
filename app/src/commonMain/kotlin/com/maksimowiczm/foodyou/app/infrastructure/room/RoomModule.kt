@@ -2,6 +2,7 @@ package com.maksimowiczm.foodyou.app.infrastructure.room
 
 import androidx.room.RoomDatabase
 import com.maksimowiczm.foodyou.common.domain.database.TransactionProvider
+import com.maksimowiczm.foodyou.common.infrastructure.room.tag.TagDatabase
 import com.maksimowiczm.foodyou.food.infrastructure.room.FoodDatabase
 import com.maksimowiczm.foodyou.food.search.infrastructure.room.FoodSearchDatabase
 import com.maksimowiczm.foodyou.fooddiary.infrastructure.room.FoodDiaryDatabase
@@ -27,6 +28,7 @@ fun Module.roomModule() {
                 FoodSearchDatabase::class,
                 FoodDiaryDatabase::class,
                 SponsorshipDatabase::class,
+                TagDatabase::class,
             )
         )
 }

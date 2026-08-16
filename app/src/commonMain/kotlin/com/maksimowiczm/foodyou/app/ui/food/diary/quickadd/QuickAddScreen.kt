@@ -26,6 +26,7 @@ import androidx.navigationevent.compose.NavigationEventHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.maksimowiczm.foodyou.app.ui.common.component.ArrowBackIconButton
 import com.maksimowiczm.foodyou.app.ui.common.component.DiscardDialog
+import com.maksimowiczm.foodyou.app.ui.tag.ManualDiaryEntryTagAssignmentChips
 import com.maksimowiczm.foodyou.common.compose.extension.add
 import foodyou.app.generated.resources.*
 import kotlinx.coroutines.delay
@@ -37,6 +38,9 @@ internal fun QuickAddScreen(
     onSave: () -> Unit,
     modifier: Modifier = Modifier,
     state: QuickAddFormState = rememberQuickAddFormState(),
+    // Only set when editing an existing (already-persisted) entry -- the Create flow has no id
+    // yet, so it leaves this null and the tag picker is not shown.
+    manualDiaryEntryId: Long? = null,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val focusRequester = remember { FocusRequester() }
@@ -110,6 +114,13 @@ internal fun QuickAddScreen(
                 )
                 Spacer(Modifier.height(16.dp))
                 QuickAddForm(state = state, modifier = Modifier.focusRequester(focusRequester))
+            }
+
+            if (manualDiaryEntryId != null) {
+                item {
+                    Spacer(Modifier.height(8.dp))
+                    ManualDiaryEntryTagAssignmentChips(manualDiaryEntryId = manualDiaryEntryId)
+                }
             }
         }
     }

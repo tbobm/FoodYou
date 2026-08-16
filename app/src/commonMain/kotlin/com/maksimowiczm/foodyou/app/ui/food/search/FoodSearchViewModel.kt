@@ -2,21 +2,26 @@ package com.maksimowiczm.foodyou.app.ui.food.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.filter
 import com.maksimowiczm.foodyou.app.ui.food.search.RemoteStatus.Companion.toRemoteStatus
 import com.maksimowiczm.foodyou.common.domain.date.DateProvider
 import com.maksimowiczm.foodyou.common.domain.food.FoodSource
 import com.maksimowiczm.foodyou.common.domain.search.searchQuery
+import com.maksimowiczm.foodyou.common.domain.tag.TagRepository
 import com.maksimowiczm.foodyou.common.domain.userpreferences.UserPreferencesRepository
 import com.maksimowiczm.foodyou.common.extension.combine
 import com.maksimowiczm.foodyou.food.domain.entity.FoodId
 import com.maksimowiczm.foodyou.food.domain.repository.FoodSearchHistoryRepository
+import com.maksimowiczm.foodyou.food.search.domain.FoodSearch
 import com.maksimowiczm.foodyou.food.search.domain.FoodSearchPreferences
 import com.maksimowiczm.foodyou.food.search.domain.FoodSearchRepository
 import com.maksimowiczm.foodyou.food.search.domain.FoodSearchUseCase
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.time.Clock
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,6 +29,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -38,6 +44,7 @@ internal class FoodSearchViewModel(
     searchHistoryRepository: FoodSearchHistoryRepository,
     private val foodSearchRepository: FoodSearchRepository,
     private val foodSearchUseCase: FoodSearchUseCase,
+    private val tagRepository: TagRepository,
     private val dateProvider: DateProvider,
 ) : ViewModel() {
 
@@ -47,6 +54,11 @@ internal class FoodSearchViewModel(
 
     private val filter = MutableStateFlow(FoodFilter())
 
+    /** Selected tag ids (PRD 3.5). Empty means "no tag filter applied". */
+    private val selectedTagIds = MutableStateFlow<Set<Long>>(emptySet())
+
+    val tags = tagRepository.observeTags()
+
     fun search(query: String?) {
         viewModelScope.launch { searchQuery.emit(query) }
     }
@@ -54,6 +66,44 @@ internal class FoodSearchViewModel(
     fun changeSource(source: FoodFilter.Source) {
         filter.update { it.copy(source = source) }
     }
+
+    fun toggleTagFilter(tagId: Long) {
+        selectedTagIds.update { if (tagId in it) it - tagId else it + tagId }
+    }
+
+    // ponytail: filters already-paged results in memory rather than threading tagIds through
+    // FoodSearchDao's UNION/CTE queries. Correct (every FoodSearch result carries a local
+    // FoodId), but FoodSourceUiState.count is computed by a separate untouched count query, so
+    // the chip's item count can be briefly stale relative to the filtered list. Move the filter
+    // into the DAO if exact counts become a requirement.
+    private val allowedIds: Flow<Pair<Set<Long>, Set<Long>>?> =
+        selectedTagIds.flatMapLatest { tagIds ->
+            if (tagIds.isEmpty()) {
+                flowOf(null)
+            } else {
+                combine(
+                    tagRepository.observeProductIdsWithAnyTag(tagIds),
+                    tagRepository.observeRecipeIdsWithAnyTag(tagIds),
+                ) { productIds, recipeIds ->
+                    productIds to recipeIds
+                }
+            }
+        }
+
+    private fun Flow<PagingData<FoodSearch>>.filterByTag(): Flow<PagingData<FoodSearch>> =
+        combine(this, allowedIds) { pagingData, allowed ->
+            if (allowed == null) {
+                pagingData
+            } else {
+                val (productIds, recipeIds) = allowed
+                pagingData.filter { food ->
+                    when (food) {
+                        is FoodSearch.Product -> food.id.id in productIds
+                        is FoodSearch.Recipe -> food.id.id in recipeIds
+                    }
+                }
+            }
+        }
 
     private val foodPreferences =
         foodSearchPreferencesRepository
@@ -65,9 +115,10 @@ internal class FoodSearchViewModel(
             )
 
     private val recentFoodPages =
-        searchQuery.flatMapLatest { query ->
-            foodSearchUseCase.searchRecent(query, excludedRecipeId).cachedIn(viewModelScope)
-        }
+        searchQuery
+            .flatMapLatest { query -> foodSearchUseCase.searchRecent(query, excludedRecipeId) }
+            .filterByTag()
+            .cachedIn(viewModelScope)
     private val recentFoodState =
         searchQuery
             .flatMapLatest { query ->
@@ -139,9 +190,9 @@ internal class FoodSearchViewModel(
         }
 
     private fun observeFoodPages(source: FoodSource.Type) =
-        searchQuery.flatMapLatest { query ->
-            foodSearchUseCase.search(query, source, excludedRecipeId)
-        }
+        searchQuery
+            .flatMapLatest { query -> foodSearchUseCase.search(query, source, excludedRecipeId) }
+            .filterByTag()
 
     private val searchHistory =
         searchHistoryRepository
@@ -162,6 +213,7 @@ internal class FoodSearchViewModel(
                 swissState,
                 filter,
                 searchHistory,
+                selectedTagIds,
             ) {
                 recentFoodState,
                 yourFoodState,
@@ -169,7 +221,8 @@ internal class FoodSearchViewModel(
                 usdaState,
                 swissState,
                 filter,
-                searchHistory ->
+                searchHistory,
+                selectedTagIds ->
                 FoodSearchUiState(
                     sources =
                         mapOf(
@@ -181,6 +234,7 @@ internal class FoodSearchViewModel(
                         ),
                     filter = filter,
                     recentSearches = searchHistory.map { it.query },
+                    selectedTagIds = selectedTagIds,
                 )
             }
             .stateIn(

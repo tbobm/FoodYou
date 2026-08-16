@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -32,6 +33,7 @@ import com.maksimowiczm.foodyou.app.ui.common.component.ArrowBackIconButton
 import com.maksimowiczm.foodyou.app.ui.common.component.IncompleteFoodsList
 import com.maksimowiczm.foodyou.app.ui.food.search.FoodSearchApp
 import com.maksimowiczm.foodyou.app.ui.food.shared.component.NutrientList
+import com.maksimowiczm.foodyou.app.ui.tag.RecipeTagAssignmentChips
 import com.maksimowiczm.foodyou.common.domain.food.isComplete
 import com.maksimowiczm.foodyou.common.domain.measurement.Measurement
 import com.maksimowiczm.foodyou.common.domain.measurement.MeasurementType
@@ -105,6 +107,19 @@ internal fun RecipeApp(
                             },
                             contentPadding = PaddingValues(horizontal = 16.dp),
                         )
+                    }
+
+                    // Only shown when editing an existing (already-persisted) recipe -- the
+                    // Create flow has no recipe id yet (mainRecipeId is null there).
+                    if (mainRecipeId != null) {
+                        item {
+                            RecipeTagAssignmentChips(
+                                recipeId = mainRecipeId.id,
+                                modifier =
+                                    Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                                        .fillMaxWidth(),
+                            )
+                        }
                     }
 
                     if (recipe != null) {

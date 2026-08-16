@@ -61,5 +61,6 @@ fun UpdateQuickAddScreen(
         },
         modifier = modifier,
         state = formState,
+        manualDiaryEntryId = id,
     )
 }
