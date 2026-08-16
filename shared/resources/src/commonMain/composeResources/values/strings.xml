@@ -34,6 +34,9 @@
     <string name="headline_home" description="Home screen">Home</string>
     <string name="headline_home_settings" description="Home screen settings">Home settings</string>
     <string name="headline_calendar">Calendar</string>
+    <string name="action_open_calendar_month" description="Opens the full month-grid calendar view">Open month view</string>
+    <string name="description_calendar_day_summary_energy" description="Energy logged vs goal for a day, e.g. '1800 / 2000 kcal'">%1$d / %2$d kcal</string>
+    <string name="description_calendar_day_summary_macros" description="Protein/carbs/fat logged vs goal for a day">P %1$d/%2$dg  C %3$d/%4$dg  F %5$d/%6$dg</string>
     <string name="headline_meals_settings">Meals settings</string>
     <string name="headline_horizontal">Horizontal</string>
     <string name="headline_vertical">Vertical</string>

@@ -7,6 +7,7 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.maksimowiczm.foodyou.app.ui.about.AboutScreen
+import com.maksimowiczm.foodyou.app.ui.calendar.CalendarMonthScreen
 import com.maksimowiczm.foodyou.app.ui.database.exportcsvproducts.ExportCsvProductsScreen
 import com.maksimowiczm.foodyou.app.ui.database.exportfulldata.ExportFullDataScreen
 import com.maksimowiczm.foodyou.app.ui.database.externaldatabases.ExternalDatabasesScreen
@@ -30,6 +31,7 @@ import com.maksimowiczm.foodyou.app.ui.home.goals.GoalsCardSettings
 import com.maksimowiczm.foodyou.app.ui.home.master.HomeScreen
 import com.maksimowiczm.foodyou.app.ui.home.meals.settings.MealsCardsSettingsScreen
 import com.maksimowiczm.foodyou.app.ui.home.personalization.HomePersonalizationScreen
+import com.maksimowiczm.foodyou.app.ui.home.shared.rememberHomeState
 import com.maksimowiczm.foodyou.app.ui.language.LanguageScreen
 import com.maksimowiczm.foodyou.app.ui.meal.MealSettingsScreen
 import com.maksimowiczm.foodyou.app.ui.personalization.PersonalizationScreen
@@ -49,10 +51,12 @@ import kotlinx.serialization.Serializable
 @Composable
 fun FoodYouAppNavHost(onDatabaseBackup: () -> Unit, modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+    val homeState = rememberHomeState()
 
     NavHost(modifier = modifier, navController = navController, startDestination = Home) {
         forwardBackwardComposable<Home> {
             HomeScreen(
+                homeState = homeState,
                 onSettings = { navController.navigateSingleTop(Settings) },
                 onTitle = { navController.navigateSingleTop(About) },
                 onMealCardLongClick = { navController.navigateSingleTop(MealsPersonalization) },
@@ -80,6 +84,16 @@ fun FoodYouAppNavHost(onDatabaseBackup: () -> Unit, modifier: Modifier = Modifie
 
                         else -> error("Either foodEntryId or manualEntryId must be non-null")
                     }
+                },
+                onOpenCalendarMonth = { navController.navigateSingleTop(CalendarMonth) },
+            )
+        }
+        forwardBackwardComposable<CalendarMonth> {
+            CalendarMonthScreen(
+                onBack = { navController.popBackStackInclusive<CalendarMonth>() },
+                onDayClick = { epochDay ->
+                    homeState.selectDate(LocalDate.fromEpochDays(epochDay))
+                    navController.popBackStackInclusive<CalendarMonth>()
                 },
             )
         }
@@ -391,6 +405,8 @@ fun FoodYouAppNavHost(onDatabaseBackup: () -> Unit, modifier: Modifier = Modifie
 }
 
 @Serializable private object Home
+
+@Serializable private object CalendarMonth
 
 @Serializable private object Settings
 

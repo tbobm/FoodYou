@@ -24,6 +24,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -61,7 +62,11 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
-internal fun CalendarCard(homeState: HomeState, modifier: Modifier = Modifier) {
+internal fun CalendarCard(
+    homeState: HomeState,
+    onOpenCalendarMonth: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val dateProvider = koinInject<DateProvider>()
     val today = dateProvider.observeDate().collectAsStateWithLifecycle(LocalDate.now()).value
 
@@ -82,12 +87,17 @@ internal fun CalendarCard(homeState: HomeState, modifier: Modifier = Modifier) {
         }
     }
 
-    CalendarCard(calendarState = calendarState, modifier = modifier)
+    CalendarCard(
+        calendarState = calendarState,
+        onOpenCalendarMonth = onOpenCalendarMonth,
+        modifier = modifier,
+    )
 }
 
 @Composable
 private fun CalendarCard(
     calendarState: CalendarState,
+    onOpenCalendarMonth: () -> Unit,
     modifier: Modifier = Modifier,
     colors: CalendarCardColors = CalendarCardDefaults.colors(),
 ) {
@@ -115,10 +125,12 @@ private fun CalendarCard(
                         )
                 )
 
-                Icon(
-                    imageVector = Icons.Default.CalendarMonth,
-                    contentDescription = stringResource(Res.string.action_show_calendar),
-                )
+                IconButton(onClick = onOpenCalendarMonth) {
+                    Icon(
+                        imageVector = Icons.Default.CalendarMonth,
+                        contentDescription = stringResource(Res.string.action_open_calendar_month),
+                    )
+                }
             }
             Spacer(Modifier.height(8.dp))
             Box(modifier = Modifier.fillMaxWidth()) {
