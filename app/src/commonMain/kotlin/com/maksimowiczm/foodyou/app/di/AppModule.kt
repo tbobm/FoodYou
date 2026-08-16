@@ -11,6 +11,7 @@ import com.maksimowiczm.foodyou.common.infrastructure.csv.csvModule
 import com.maksimowiczm.foodyou.common.infrastructure.datastore.dataStoreModule
 import com.maksimowiczm.foodyou.common.infrastructure.inmemory.inMemoryModule
 import com.maksimowiczm.foodyou.common.infrastructure.koin.applicationCoroutineScope
+import com.maksimowiczm.foodyou.common.infrastructure.room.tag.tagModule
 import com.maksimowiczm.foodyou.common.infrastructure.system.systemModule
 import com.maksimowiczm.foodyou.common.log.Logger
 import kotlinx.coroutines.CoroutineScope
@@ -31,4 +32,5 @@ fun appModule(applicationCoroutineScope: CoroutineScope) = module {
     inMemoryModule()
     roomModule()
     systemModule()
+    tagModule()
 }

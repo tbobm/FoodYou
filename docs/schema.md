@@ -1,9 +1,9 @@
-# Database schema (as of this fork, schema version 33)
+# Database schema (as of this fork, schema version 34)
 
 Single Room database: `FoodYouDatabase`
 (`app/src/commonMain/kotlin/com/maksimowiczm/foodyou/app/infrastructure/room/FoodYouDatabase.kt`).
 `exportSchema = true`; every version's JSON schema is checked in under
-`app/schemas/com.maksimowiczm.foodyou.app.infrastructure.room.FoodYouDatabase/{1..33}.json`.
+`app/schemas/com.maksimowiczm.foodyou.app.infrastructure.room.FoodYouDatabase/{1..34}.json`.
 
 ## The load-bearing finding: entries already snapshot at write time
 
@@ -66,6 +66,27 @@ Note the diary has **two parallel entry tables** (`Measurement` for product/reci
 As of v33, `source_kind`/`confidence` were added to **both** tables separately rather than unified
 into one — the PRD §2 gate this required was resolved in `docs/phase-1.2-1.3-proposal.md`.
 
+### Tags (`common/infrastructure/room/tag/`) — PRD 3.5 categorisation, added v34
+
+| Entity | Table | Key columns | Notes |
+|---|---|---|---|
+| `TagEntity` | `Tag` | `id` PK (autogenerate), `name` (unique index) | User-defined label, free-form name. |
+| `ProductTagCrossRefEntity` | `ProductTagCrossRef` | `(productId, tagId)` composite PK, both FK cascade-delete | Many-to-many: catalog `Product` ↔ `Tag`. |
+| `RecipeTagCrossRefEntity` | `RecipeTagCrossRef` | `(recipeId, tagId)` composite PK, both FK cascade-delete | Many-to-many: catalog `Recipe` ↔ `Tag`. |
+| `ManualDiaryEntryTagCrossRefEntity` | `ManualDiaryEntryTagCrossRef` | `(manualDiaryEntryId, tagId)` composite PK, both FK cascade-delete | Many-to-many: `ManualDiaryEntry` ↔ `Tag`. |
+
+`Measurement` (the product/recipe-backed diary entry) intentionally has **no** direct cross-ref
+table — it already references a food via `originProductId`/`originRecipeId` (and transitively via
+its `DiaryProduct`/`DiaryRecipe` snapshot), so tagging the catalog `Product`/`Recipe` covers it.
+Only `ManualDiaryEntry` needs its own cross-ref, since it has no product/recipe reference at all.
+
+Food search filtering by tag (PRD 3.5 "filterable") is done in the app layer: `TagDao` exposes
+`observeProductIdsWithAnyTag`/`observeRecipeIdsWithAnyTag` (id-set lookups), and
+`FoodSearchViewModel` intersects already-paged results against the selected tag's id set rather
+than threading a tag filter through `FoodSearchDao`'s existing UNION/CTE queries. See the
+`ponytail:` comment on `FoodSearchViewModel.filterByTag` for the tradeoff (per-source item counts
+can be briefly stale relative to the filtered list).
+
 ### Other
 
 - `SponsorshipEntity` (`sponsorship/infrastructure/room/`) — Ko-fi/crypto sponsor list, unrelated to nutrition data.
@@ -126,10 +147,11 @@ Defined across `FoodYouDatabase.kt` (autoMigrations list + `migrations` companio
 | 30→31 | Manual (`FoodSearchFtsMigration`) | Add FTS4 tables for `Product`/`Recipe` search. |
 | 31→32 | Manual (`FoodSearchFtsCyrillicMigration`) | Add Cyrillic tokenizer support to the FTS tables. |
 | **32→33** | Manual (`addProvenanceAndCostColumns`) | **PRD 1.2 + 1.3.** Adds `sourceKind`/`confidence`/`originProductId`/`originRecipeId` to `Measurement` (all nullable, `sourceKind = 'recipe'` backfilled where `recipeId IS NOT NULL`); `sourceKind`/`confidence` (NOT NULL, defaulted) + `unitCost`/`currency` to `ManualDiaryEntry`; `pricePerUnit`/`currency` to `Product`; `unitCost`/`currency` to `DiaryProduct` and `DiaryRecipe`. Purely additive, no destructive change. |
+| **33→34** | Manual (`addTagTables`) | **PRD 3.5.** Adds `Tag`, `ProductTagCrossRef`, `RecipeTagCrossRef`, `ManualDiaryEntryTagCrossRef` — see the Tags section above. Purely additive, all new FKs `ON DELETE CASCADE`, no existing table or column altered. |
 
 **Migration fixture tests already exist** for the manual migrations, satisfying PRD §4's migration
 policy pattern (extend, don't parallel):
-`app/src/commonTest/.../migration/Abstract{FoodYou3,UnlinkDiary,DeleteUsedFoodEvent,FoodSearchFts,AddProvenanceAndCostColumns}Test.kt`
+`app/src/commonTest/.../migration/Abstract{FoodYou3,UnlinkDiary,DeleteUsedFoodEvent,FoodSearchFts,AddProvenanceAndCostColumns,AddTagTables}Test.kt`
 with Android instrumented implementations under `app/src/androidInstrumentedTest/.../migration/`.
 Any new migration this project adds should follow the same `Abstract*Test` + platform-`actual`-test
 pattern rather than introducing a new harness.

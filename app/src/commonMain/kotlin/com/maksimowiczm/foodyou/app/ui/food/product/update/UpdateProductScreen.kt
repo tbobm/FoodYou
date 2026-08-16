@@ -2,7 +2,9 @@ package com.maksimowiczm.foodyou.app.ui.food.product.update
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Save
@@ -25,6 +27,7 @@ import com.maksimowiczm.foodyou.app.ui.common.component.ArrowBackIconButton
 import com.maksimowiczm.foodyou.app.ui.common.component.DiscardDialog
 import com.maksimowiczm.foodyou.app.ui.food.product.ProductForm
 import com.maksimowiczm.foodyou.app.ui.food.product.rememberProductFormState
+import com.maksimowiczm.foodyou.app.ui.tag.ProductTagAssignmentChips
 import com.maksimowiczm.foodyou.common.compose.extension.LaunchedCollectWithLifecycle
 import foodyou.app.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
@@ -106,6 +109,13 @@ internal fun UpdateProductScreen(
                     ProductForm(
                         state = productForm,
                         contentPadding = PaddingValues(horizontal = 16.dp),
+                    )
+                }
+
+                item {
+                    ProductTagAssignmentChips(
+                        productId = product.id.id,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                     )
                 }
             }

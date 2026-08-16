@@ -16,6 +16,7 @@ fun Module.food() {
             searchHistoryRepository = get(),
             foodSearchRepository = get(),
             foodSearchUseCase = get(),
+            tagRepository = get(),
             dateProvider = get(),
         )
     }
