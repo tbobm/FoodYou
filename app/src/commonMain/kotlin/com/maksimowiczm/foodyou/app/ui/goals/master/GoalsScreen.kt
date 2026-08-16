@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maksimowiczm.foodyou.app.ui.common.component.ArrowBackIconButton
 import com.maksimowiczm.foodyou.app.ui.common.component.IncompleteFoodsList
 import com.maksimowiczm.foodyou.app.ui.common.theme.LocalNutrientsPalette
+import com.maksimowiczm.foodyou.app.ui.common.utility.LocalEnergyFormatter
 import com.maksimowiczm.foodyou.app.ui.common.utility.LocalNutrientsOrder
 import com.maksimowiczm.foodyou.common.compose.utility.LocalDateFormatter
 import com.maksimowiczm.foodyou.common.domain.food.NutritionFacts
@@ -46,6 +47,8 @@ import com.maksimowiczm.foodyou.common.domain.food.NutritionFactsField
 import com.maksimowiczm.foodyou.common.domain.food.get
 import com.maksimowiczm.foodyou.common.domain.food.sum
 import com.maksimowiczm.foodyou.goals.domain.entity.DailyGoal
+import com.maksimowiczm.foodyou.goals.domain.entity.RollingBudgetPreferences
+import com.maksimowiczm.foodyou.goals.domain.usecase.RollingEnergyBalance
 import com.maksimowiczm.foodyou.settings.domain.entity.NutrientsOrder
 import foodyou.app.generated.resources.*
 import kotlin.time.Instant
@@ -141,6 +144,11 @@ private fun GoalsPage(uiState: GoalsScreenUiState, modifier: Modifier = Modifier
             goals = goals,
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
         )
+        RollingBudgetSection(
+            balance = uiState.rollingBalance,
+            preferences = uiState.rollingBudgetPreferences,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        )
         if (meals.incompleteFoods.isNotEmpty()) {
             IncompleteFoodsList(
                 foods = meals.incompleteFoods,
@@ -223,6 +231,73 @@ private fun NutrientList(
                 NutrientsOrder.Other -> Other(nutritionFacts, goals)
                 NutrientsOrder.Vitamins -> Vitamins(nutritionFacts, goals)
                 NutrientsOrder.Minerals -> Minerals(nutritionFacts, goals)
+            }
+        }
+    }
+}
+
+/**
+ * PRD 3.1: cumulative surplus/deficit over the rolling window, supplementing (not replacing) the
+ * daily target above. When carryover is enabled the pooled total is the whole story -- a single
+ * high day is absorbed rather than called out. When disabled, individual over-target days are
+ * additionally flagged here; the existing daily view above is unaffected either way.
+ */
+@Composable
+private fun RollingBudgetSection(
+    balance: RollingEnergyBalance,
+    preferences: RollingBudgetPreferences,
+    modifier: Modifier = Modifier,
+) {
+    val energyFormatter = LocalEnergyFormatter.current
+    val colorScheme = MaterialTheme.colorScheme
+
+    val isSurplus = balance.balanceKcal > 0
+    val balanceColor = if (isSurplus) colorScheme.error else colorScheme.primary
+
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = stringResource(Res.string.headline_rolling_budget),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+        )
+
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                text = energyFormatter.formatEnergy(balance.balanceKcal, withSuffix = true),
+                style = MaterialTheme.typography.headlineSmall,
+                color = balanceColor,
+            )
+            Text(
+                text =
+                    stringResource(
+                        if (isSurplus) Res.string.neutral_rolling_budget_surplus
+                        else Res.string.neutral_rolling_budget_deficit
+                    ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.outline,
+            )
+        }
+
+        Text(
+            text =
+                stringResource(
+                    Res.string.description_rolling_budget_window,
+                    balance.days.size,
+                ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
+
+        if (!preferences.carryover) {
+            val overTargetDays = balance.days.count { it.isOverTarget }
+            if (overTargetDays > 0) {
+                Text(
+                    text =
+                        "${stringResource(Res.string.neutral_rolling_budget_day_over_target)}: " +
+                            overTargetDays,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colorScheme.error,
+                )
             }
         }
     }
