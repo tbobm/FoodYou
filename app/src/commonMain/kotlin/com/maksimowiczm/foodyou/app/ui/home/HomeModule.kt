@@ -33,6 +33,7 @@ fun Module.home() {
             settingsRepository = userPreferencesRepository(),
             observeDiaryMealsUseCase = get(),
             goalsRepository = get(),
+            rollingBudgetPreferencesRepository = userPreferencesRepository(),
         )
     }
     viewModel { HomePersonalizationViewModel(settingsRepository = userPreferencesRepository()) }
