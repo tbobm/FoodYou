@@ -350,7 +350,7 @@
     <string name="headline_latest" description="Latest, most recent">Ultimo</string>
     <string name="headline_top_sponsorships" description="Most money contributed">Migliore</string>
     <string name="headline_this_month_we_raised">Questo mese abbiamo raccolto %1$s</string>
-    <string name="description_sponsors_privacy">Food You tratta la tua privacy molto seriamente. È per questo che non si connette a nessuno servizio esterno almeno che non lo consenta tu. Per vedere gli ultimi sostenitori, i dati devono essere scaricati dai server di Food You.</string>
+    <string name="description_sponsors_privacy">mymymeal tratta la tua privacy molto seriamente. È per questo che non si connette a nessuno servizio esterno almeno che non lo consenta tu. Per vedere gli ultimi sostenitori, i dati devono essere scaricati dai server di mymymeal.</string>
     <string name="action_allow" description="Allow something">Consenti</string>
     <string name="action_next_month">Mese prossimo</string>
     <string name="action_previous_month">Mese precedente</string>

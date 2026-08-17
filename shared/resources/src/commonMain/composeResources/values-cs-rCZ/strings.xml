@@ -356,7 +356,7 @@
     <string name="headline_latest" description="Latest, most recent">Nejnovější</string>
     <string name="headline_top_sponsorships" description="Most money contributed">Vrchní</string>
     <string name="headline_this_month_we_raised">Tento měsíc jsme získali %1$s</string>
-    <string name="description_sponsors_privacy">Food You bere vaše soukromí vážně. Proto nepoužíváme služby třetích stran aniž byste je povolili. Pro zobrazení nejnovějších podporovatelů musí být data stažena ze serverů GitHubu.</string>
+    <string name="description_sponsors_privacy">mymymeal bere vaše soukromí vážně. Proto nepoužíváme služby třetích stran aniž byste je povolili. Pro zobrazení nejnovějších podporovatelů musí být data stažena ze serverů GitHubu.</string>
     <string name="action_allow" description="Allow something">Povolit</string>
     <string name="action_next_month">Příští měsíc</string>
     <string name="action_previous_month">Předchozí měsíc</string>

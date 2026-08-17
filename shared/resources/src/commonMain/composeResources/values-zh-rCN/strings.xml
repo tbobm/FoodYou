@@ -331,7 +331,7 @@
     <string name="headline_latest" description="Latest, most recent">最近</string>
     <string name="headline_top_sponsorships" description="Most money contributed">最多</string>
     <string name="headline_this_month_we_raised">本月我们筹集到 %1$s</string>
-    <string name="description_sponsors_privacy">Food You 高度重视您的隐私。因此除非您允许，否则它不连接任何外部服务。要查看最新的赞助信息，需要连接 Food You 服务器获取数据。</string>
+    <string name="description_sponsors_privacy">mymymeal 高度重视您的隐私。因此除非您允许，否则它不连接任何外部服务。要查看最新的赞助信息，需要连接 mymymeal 服务器获取数据。</string>
     <string name="action_allow" description="Allow something">允许</string>
     <string name="action_next_month">下一月</string>
     <string name="action_previous_month">前一月</string>

@@ -331,7 +331,7 @@
     <string name="headline_latest" description="Latest, most recent">Terbaru</string>
     <string name="headline_top_sponsorships" description="Most money contributed">Teratas</string>
     <string name="headline_this_month_we_raised">Bulan ini kami mengumpulkan %1$s</string>
-    <string name="description_sponsors_privacy">Food You sangat menjaga privasi Anda. Karena itu, aplikasi ini tidak akan terhubung ke layanan eksternal kecuali Anda mengizinkannya. Untuk melihat sponsor terbaru, data harus diunduh dari server Food You.</string>
+    <string name="description_sponsors_privacy">mymymeal sangat menjaga privasi Anda. Karena itu, aplikasi ini tidak akan terhubung ke layanan eksternal kecuali Anda mengizinkannya. Untuk melihat sponsor terbaru, data harus diunduh dari server mymymeal.</string>
     <string name="action_allow" description="Allow something">Izinkan</string>
     <string name="action_next_month">Bulan depan</string>
     <string name="action_previous_month">Bulan lalu</string>

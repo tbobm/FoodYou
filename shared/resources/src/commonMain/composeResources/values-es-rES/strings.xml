@@ -340,7 +340,7 @@
     <string name="headline_latest" description="Latest, most recent">Recientes</string>
     <string name="headline_top_sponsorships" description="Most money contributed">Mayores donaciones</string>
     <string name="headline_this_month_we_raised">Este mes hemos recaudado %1$s</string>
-    <string name="description_sponsors_privacy">Food You se toma muy en serio tu privacidad. Por eso no habrá conexiones a ningún servicio externo a menos que lo permitas. Para ver los últimos patrocinadores, los datos deben descargarse desde los servidores de GitHub.</string>
+    <string name="description_sponsors_privacy">mymymeal se toma muy en serio tu privacidad. Por eso no habrá conexiones a ningún servicio externo a menos que lo permitas. Para ver los últimos patrocinadores, los datos deben descargarse desde los servidores de GitHub.</string>
     <string name="action_allow" description="Allow something">Permitir</string>
     <string name="action_next_month">Próximo mes</string>
     <string name="action_previous_month">Mes anterior</string>

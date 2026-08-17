@@ -349,7 +349,7 @@
     <string name="headline_latest" description="Latest, most recent">En son</string>
     <string name="headline_top_sponsorships" description="Most money contributed">En yüksek</string>
     <string name="headline_this_month_we_raised">Bu ay %1$s topladık</string>
-    <string name="description_sponsors_privacy">Food You, gizliliğinizi ciddiye alır. Bu nedenle, siz izin vermedikçe hiçbir harici hizmete bağlanmaz. En son sponsorları görmek için verilerin GitHub sunucularından indirilmesi gerekir.</string>
+    <string name="description_sponsors_privacy">mymymeal, gizliliğinizi ciddiye alır. Bu nedenle, siz izin vermedikçe hiçbir harici hizmete bağlanmaz. En son sponsorları görmek için verilerin GitHub sunucularından indirilmesi gerekir.</string>
     <string name="action_allow" description="Allow something">İzin ver</string>
     <string name="action_next_month">Gelecek ay</string>
     <string name="action_previous_month">Önceki ay</string>

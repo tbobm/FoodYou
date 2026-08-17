@@ -14,7 +14,7 @@
     <string name="headline_system">Sistem</string>
     <string name="headline_system_language_settings">Nastavitve sistemskega jezika</string>
     <string name="headline_secure_screen">Zaščita zaslona</string>
-    <string name="headline_about">O aplikaciji Food You</string>
+    <string name="headline_about">O aplikaciji mymymeal</string>
     <string name="headline_version">Različica</string>
     <string name="headline_all_day" description="All-day (meal)">Celodnevno</string>
     <string name="headline_time_based_ordering">Naročanje na podlagi časa</string>
@@ -358,7 +358,7 @@
     <string name="headline_latest" description="Latest, most recent">Najnovejše</string>
     <string name="headline_top_sponsorships" description="Most money contributed">Po znesku</string>
     <string name="headline_this_month_we_raised">Ta mesec smo zbrali %1$s</string>
-    <string name="description_sponsors_privacy">Food You resno jemlje vašo zasebnost. Zato se ne bo povezala z nobeno zunanjo storitvijo, če tega ne dovolite. Če si želite ogledati najnovejše sponzorje, morate podatke prenesti s strežnikov Food You.</string>
+    <string name="description_sponsors_privacy">mymymeal resno jemlje vašo zasebnost. Zato se ne bo povezala z nobeno zunanjo storitvijo, če tega ne dovolite. Če si želite ogledati najnovejše sponzorje, morate podatke prenesti s strežnikov mymymeal.</string>
     <string name="action_allow" description="Allow something">Omogočite</string>
     <string name="action_next_month">Naslednji mesec</string>
     <string name="action_previous_month">Prejšnji mesec</string>

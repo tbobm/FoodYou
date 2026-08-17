@@ -348,7 +348,7 @@
     <string name="headline_latest" description="Latest, most recent">Legutóbbi</string>
     <string name="headline_top_sponsorships" description="Most money contributed">Legnagyobb</string>
     <string name="headline_this_month_we_raised">Ebben a hónapban %1$s összeget gyűjtöttünk</string>
-    <string name="description_sponsors_privacy">A Food You komolyan veszi a magánszférádat. Ezért nem csatlakozik külső szolgáltatásokhoz, amíg Ön azt nem engedélyezi. Ahhoz, hogy megtekinthesse legutóbbi támogatóinkat, az adatokat a Food You szervereiről kell letöltenünk.</string>
+    <string name="description_sponsors_privacy">A mymymeal komolyan veszi a magánszférádat. Ezért nem csatlakozik külső szolgáltatásokhoz, amíg Ön azt nem engedélyezi. Ahhoz, hogy megtekinthesse legutóbbi támogatóinkat, az adatokat a mymymeal szervereiről kell letöltenünk.</string>
     <string name="action_allow" description="Allow something">Engedélyezés</string>
     <string name="action_next_month">Következő hónap</string>
     <string name="action_previous_month">Előző hónap</string>

@@ -365,7 +365,7 @@
     <string name="headline_latest" description="Latest, most recent">Последние</string>
     <string name="headline_top_sponsorships" description="Most money contributed">Лидеры</string>
     <string name="headline_this_month_we_raised">В этом месяце мы собрали %1$s</string>
-    <string name="description_sponsors_privacy">Food You серьёзно относится к вашей конфиденциальности. Поэтому приложение не будет подключаться к каким-либо внешним сервисам без вашего разрешения. Чтобы увидеть последних спонсоров, необходимо загрузить данные с серверов Food You.</string>
+    <string name="description_sponsors_privacy">mymymeal серьёзно относится к вашей конфиденциальности. Поэтому приложение не будет подключаться к каким-либо внешним сервисам без вашего разрешения. Чтобы увидеть последних спонсоров, необходимо загрузить данные с серверов mymymeal.</string>
     <string name="action_allow" description="Allow something">Разрешить</string>
     <string name="action_next_month">Следующий месяц</string>
     <string name="action_previous_month">Предыдущий месяц</string>

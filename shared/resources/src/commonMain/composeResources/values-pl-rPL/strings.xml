@@ -365,7 +365,7 @@
     <string name="headline_latest" description="Latest, most recent">Najnowsze</string>
     <string name="headline_top_sponsorships" description="Most money contributed">Największe</string>
     <string name="headline_this_month_we_raised">W tym miesiącu zebraliśmy %1$s</string>
-    <string name="description_sponsors_privacy">Food You traktuje Twoją prywatność poważnie. Dlatego nie łączy się z żadnymi zewnętrznymi usługami bez Twojej zgody. Aby zobaczyć najnowszych sponsorów, dane muszą zostać pobrane z serwerów Food You.</string>
+    <string name="description_sponsors_privacy">mymymeal traktuje Twoją prywatność poważnie. Dlatego nie łączy się z żadnymi zewnętrznymi usługami bez Twojej zgody. Aby zobaczyć najnowszych sponsorów, dane muszą zostać pobrane z serwerów mymymeal.</string>
     <string name="action_allow" description="Allow something">Zezwól</string>
     <string name="action_next_month">Następny miesiąc</string>
     <string name="action_previous_month">Poprzedni miesiąc</string>
