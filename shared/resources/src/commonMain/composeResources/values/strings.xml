@@ -474,7 +474,7 @@
 
     <string name="headline_this_month_we_raised">This month we raised %1$s</string>
 
-    <string name="description_sponsors_privacy">Food You takes your privacy seriously. That's why it won't connect to any external services unless you allow it. To see the latest sponsors, the data must be downloaded from GitHub's servers.</string>
+    <string name="description_sponsors_privacy">mymymeal takes your privacy seriously. That's why it won't connect to any external services unless you allow it. To see the latest sponsors, the data must be downloaded from GitHub's servers.</string>
 
     <string name="action_allow" description="Allow something">Allow</string>
 

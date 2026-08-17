@@ -340,7 +340,7 @@
     <string name="headline_latest" description="Latest, most recent">Viimeisimmät</string>
     <string name="headline_top_sponsorships" description="Most money contributed">Parhaat</string>
     <string name="headline_this_month_we_raised">Tässä kuussa keräsimme %1$s</string>
-    <string name="description_sponsors_privacy">Food You ottaa yksityisyytesi tosissaan. Sen takia emme yhdistä sinua mihinkään ulkopuoliseen palveluun ilman sinun hyväksyntääsi. Nähdäksesi viimeisimmät tukijat, tiedot täytyy ladata GitHubin palvelimilta.</string>
+    <string name="description_sponsors_privacy">mymymeal ottaa yksityisyytesi tosissaan. Sen takia emme yhdistä sinua mihinkään ulkopuoliseen palveluun ilman sinun hyväksyntääsi. Nähdäksesi viimeisimmät tukijat, tiedot täytyy ladata GitHubin palvelimilta.</string>
     <string name="action_allow" description="Allow something">Salli</string>
     <string name="action_next_month">Seuraava kuukausi</string>
     <string name="action_previous_month">Edellinen kuukausi</string>
