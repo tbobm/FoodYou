@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: true
+          log-accepted-android-sdk-licenses: false
+
+      - name: Check Room schema export matches DB version
+        run: |
+          version=$(grep -oP 'const val VERSION = \K\d+' app/src/commonMain/kotlin/com/maksimowiczm/foodyou/app/infrastructure/room/FoodYouDatabase.kt)
+          schema_dir="app/schemas/com.maksimowiczm.foodyou.app.infrastructure.room.FoodYouDatabase"
+          if [ ! -f "$schema_dir/$version.json" ]; then
+            echo "::error::FoodYouDatabase.VERSION=$version has no exported schema at $schema_dir/$version.json. Bump the version and run a build to export the schema, or check in the missing file."
+            exit 1
+          fi
+
+      - name: Build debug APK
+        run: ./gradlew --no-daemon assembleDebug
+
+      - name: Run unit tests
+        run: ./gradlew --no-daemon test
